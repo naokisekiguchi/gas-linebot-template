@@ -1,0 +1,26 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9.4
+
+    working_directory: /home/circleci/project
+
+    steps:
+      - checkout
+
+      - run:
+          name: Show system information.
+          command: |
+            echo "Node $(node -v)"
+            echo "Npm $(npm -v)"
+
+      - run:
+          name: deploy to gas
+          command: |
+            echo $CLASPRC_JSON > ~/.clasprc.json
+            echo $CLASP_JSON > ./.clasp.json
+            echo 'var ACCESS_TOKEN = "'$LINE_ACCESS_TOKEN'";' > ./config.js
+            npx @google/clasp push
+            npx @google/clasp deploy -i $DEPLOY_ID
